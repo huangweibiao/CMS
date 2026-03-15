@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cms.repository.ContentRepository">
+
+    <resultMap id="BaseResultMap" type="com.cms.entity.Content">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content"/>
+        <result column="category" property="category"/>
+        <result column="tags" property="tags"/>
+        <result column="status" property="status"/>
+        <result column="author_id" property="authorId"/>
+        <result column="author_name" property="authorName"/>
+        <result column="view_count" property="viewCount"/>
+        <result column="like_count" property="likeCount"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="deleted" property="deleted"/>
+        <result column="create_by" property="createBy"/>
+        <result column="update_by" property="updateBy"/>
+    </resultMap>
+
+    <select id="findById" resultMap="BaseResultMap">
+        SELECT * FROM content WHERE id = #{id} AND deleted = 0
+    </select>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT * FROM content WHERE deleted = 0 ORDER BY create_time DESC
+    </select>
+
+    <select id="findByStatus" resultMap="BaseResultMap">
+        SELECT * FROM content WHERE status = #{status} AND deleted = 0 ORDER BY create_time DESC
+    </select>
+
+    <select id="findByAuthorId" resultMap="BaseResultMap">
+        SELECT * FROM content WHERE author_id = #{authorId} AND deleted = 0 ORDER BY create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.cms.entity.Content" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO content (title, content, category, tags, status, author_id, author_name,
+                            view_count, like_count, create_time, update_time, deleted, create_by, update_by)
+        VALUES (#{title}, #{content}, #{category}, #{tags}, #{status}, #{authorId}, #{authorName},
+                0, 0, NOW(), NOW(), 0, 'system', 'system')
+    </insert>
+
+    <update id="update" parameterType="com.cms.entity.Content">
+        UPDATE content
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="category != null">category = #{category},</if>
+            <if test="tags != null">tags = #{tags},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="authorName != null">author_name = #{authorName},</if>
+            <if test="viewCount != null">view_count = #{viewCount},</if>
+            <if test="likeCount != null">like_count = #{likeCount},</if>
+            update_time = NOW(),
+            update_by = 'system'
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="deleteById">
+        UPDATE content SET deleted = 1, update_time = NOW() WHERE id = #{id}
+    </update>
+
+</mapper>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cms.repository.UserRepository">
+
+    <resultMap id="BaseResultMap" type="com.cms.entity.User">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="email" property="email"/>
+        <result column="nickname" property="nickname"/>
+        <result column="avatar" property="avatar"/>
+        <result column="oauth2_id" property="oauth2Id"/>
+        <result column="oauth2_provider" property="oauth2Provider"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="deleted" property="deleted"/>
+        <result column="create_by" property="createBy"/>
+        <result column="update_by" property="updateBy"/>
+    </resultMap>
+
+    <select id="findById" resultMap="BaseResultMap">
+        SELECT * FROM user WHERE id = #{id} AND deleted = 0
+    </select>
+
+    <select id="findByUsername" resultMap="BaseResultMap">
+        SELECT * FROM user WHERE username = #{username} AND deleted = 0
+    </select>
+
+    <select id="findByEmail" resultMap="BaseResultMap">
+        SELECT * FROM user WHERE email = #{email} AND deleted = 0
+    </select>
+
+    <select id="findByOauth2Id" resultMap="BaseResultMap">
+        SELECT * FROM user WHERE oauth2_id = #{oauth2Id} AND deleted = 0
+    </select>
+
+    <insert id="insert" parameterType="com.cms.entity.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user (username, email, nickname, avatar, oauth2_id, oauth2_provider,
+                         create_time, update_time, deleted, create_by, update_by)
+        VALUES (#{username}, #{email}, #{nickname}, #{avatar}, #{oauth2Id}, #{oauth2Provider},
+                NOW(), NOW(), 0, 'system', 'system')
+    </insert>
+
+    <update id="update" parameterType="com.cms.entity.User">
+        UPDATE user
+        <set>
+            <if test="username != null">username = #{username},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="nickname != null">nickname = #{nickname},</if>
+            <if test="avatar != null">avatar = #{avatar},</if>
+            update_time = NOW(),
+            update_by = 'system'
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>
